@@ -22,7 +22,9 @@
         <td><?=$brand->id?></td>
         <td><?=$brand->name?></td>
         <td><?=$brand->intro?></td>
-        <td><?=$brand->logo?></td>
+        <td>
+            <img src="<?=$brand->logo?>" width="150px">
+        </td>
         <td><?=$brand->sort?></td>
         <td><?=$brand->status?></td>
         <td>
@@ -48,3 +50,10 @@
         });
     }
 </script>
+
+<?php
+//分页工具条
+echo \yii\widgets\LinkPager::widget([
+    'pagination'=>$pager
+]);
+?>

@@ -31,6 +31,7 @@ class ArticleCategoryController extends Controller{
             if($model->validate()){
                 //保存数据
                 $model->save();
+                \Yii::$app->session->setFlash('success','添加成功');
                 //保存成功跳转页面
                 return $this->redirect(['article-category/index']);
             }else{

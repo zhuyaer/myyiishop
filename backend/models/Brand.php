@@ -20,7 +20,7 @@ class Brand extends ActiveRecord{
             [['sort','status'],'integer'],
             [['name'],'string','max'=>50],
             [['logo'],'string','max'=>255],
-            ['file', 'file', 'skipOnEmpty'=>false, "extensions"=>"jpg,png,gif"],
+            /*['file', 'file', 'skipOnEmpty'=>false, "extensions"=>"jpg,png,gif"],*/
         ];
     }
 

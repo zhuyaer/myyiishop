@@ -9,14 +9,16 @@ namespace backend\models;
 
 use yii\db\ActiveRecord;
 
-class Article extends ActiveRecord{
+class Article extends ActiveRecord
+{
     //定义规则
     public function rules()
     {
         return [
-            [['intro'],'string'],
-            [['sort','status','article_category_id','create_time'],'integer'],
-            [['name'],'string','max'=>50],
+            [['name','intro','article_category_id','sort'],'required'],
+            [['intro'], 'string'],
+            [['sort', 'status', 'article_category_id', 'create_time'], 'integer'],
+            [['name'], 'string', 'max' => 50],
         ];
     }
 
@@ -24,18 +26,20 @@ class Article extends ActiveRecord{
     public function attributeLabels()
     {
         return [
-            'id'=>'ID',
-            'name'=>'名称',
-            'intro'=>'简介',
-            'article_category_id'=>'文章分类id',
-            'sort'=>'排序',
-            'status'=>'状态',
-            'create_time'=>'添加时间'
+            'id' => 'ID',
+            'name' => '名称',
+            'intro' => '简介',
+            'article_category_id' => '文章分类id',
+            'sort' => '排序',
+            'status' => '状态',
+            'create_time' => '添加时间'
         ];
     }
 
-    public function getCategory() {
-        return $this->hasOne(ArticleCategory::className(), ['id'=>'article_category_id']);
+    //文章分类关联
+    public function getCategory()
+    {
+        return $this->hasOne(ArticleCategory::className(), ['id' => 'article_category_id']);
     }
 
 
@@ -54,4 +58,6 @@ class Article extends ActiveRecord{
         }
         return true;
     }
+
+
 }
