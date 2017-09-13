@@ -9,26 +9,22 @@
 <a href="<?=\yii\helpers\Url::to(['goods/add'])?>" class="btn btn-primary">添加商品</a>
 
 <!-- 搜索 -->
-<!--<form id="w0" class="form-inline" action="/goods/index" method="get" role="form">
-    <div class="form-group field-goodssearchform-name has-success">
-        <input type="text" id="goodssearchform-name" class="form-control"
-               name="GoodsSearchForm[name]" placeholder="商品名" aria-invalid="false">
-    </div>
-    <div class="form-group field-goodssearchform-sn has-success">
-        <input type="text" id="goodssearchform-sn" class="form-control"
-               name="GoodsSearchForm[sn]" placeholder="货号" aria-invalid="false">
-    </div>
-    <div class="form-group field-goodssearchform-minprice has-success">
-        <input type="text" id="goodssearchform-minprice" class="form-control"
-               name="GoodsSearchForm[minPrice]" placeholder="￥" aria-invalid="false">
-    </div>
-    <div class="form-group field-goodssearchform-maxprice">
-        <label class="sr-only" for="goodssearchform-maxprice">-</label>
-        <input type="text" id="goodssearchform-maxprice" class="form-control"
-               name="GoodsSearchForm[maxPrice]" placeholder="￥">
-    </div>
-    <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span>搜索</button></form>
--->
+<br>
+<?php
+$form = \yii\bootstrap\ActiveForm::begin([
+    'method' => 'get',
+    //get方式提交,需要显式指定action
+    'action'=>\yii\helpers\Url::to(['goods/index']),
+    'options'=>['class'=>'form-inline']
+]);
+echo $form->field($search,'name')->textInput(['placeholder'=>'商品名'])->label(false);
+echo $form->field($search,'sn')->textInput(['placeholder'=>'货号'])->label(false);
+echo $form->field($search,'minPrice')->textInput(['placeholder'=>'￥'])->label(false);
+echo $form->field($search,'maxPrice')->textInput(['placeholder'=>'￥'])->label('-');
+echo "&emsp;";
+echo '<button type="submit" class="btn btn-info"><strong style="font-size: 20px;">搜索</strong></button>';
+\yii\bootstrap\ActiveForm::end();
+?>
 <table class="table table-bordered table-responsive">
     <tr>
         <th>ID</th>
@@ -47,7 +43,7 @@
         <th>浏览</th>
         <th width="20%">操作</th>
     </tr>
-    <?php foreach ($goods as $good):?>
+    <?php foreach ($models as $good):?>
         <tr id="<?=$good->id?>">
             <td><?=$good->id?></td>
             <td><?=$good->name?></td>

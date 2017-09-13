@@ -7,19 +7,24 @@
  */
 namespace backend\controllers;
 
+use backend\models\GoodsGallery;
 use backend\models\Brand;
 use backend\models\Goods;
+use backend\models\GoodsCategory;
 use backend\models\GoodsDayCount;
 use backend\models\GoodsIntro;
+use backend\models\GoodsSearch;
 use yii\data\Pagination;
 use yii\web\Controller;
 use flyok666\uploadifive\UploadAction;
 use flyok666\qiniu\Qiniu;
+use yii\web\NotFoundHttpException;
+use yii\web\Request;
 class GoodsController extends Controller{
 
     //显示goods表
     public function actionIndex(){
-        $searchModel = new Goods();
+      /*  $searchModel = new Goods();
         $query = Goods::find();
         //当前页码（get参数）
         //实例化分页工具类
@@ -30,7 +35,19 @@ class GoodsController extends Controller{
             'defaultPageSize'=>3
         ]);
         $models = $query->limit($pager->limit)->offset($pager->offset)->all();
-        return $this->render('index',['goods'=>$models,'pager'=>$pager,'searchModel'=> $searchModel]);
+        return $this->render('index',['goods'=>$models,'pager'=>$pager,'searchModel'=> $searchModel]);*/
+        $Goods = Goods::find();
+        //表单模型
+        $Form = new GoodsSearch();
+        //接收表单提交的查询参数
+        $Form->search($Goods);
+        $pager = new Pagination([
+            'totalCount'=>$Goods->count(),
+            'defaultPageSize'=>3
+        ]);
+
+        $models = $Goods->limit($pager->limit)->offset($pager->offset)->all();
+        return $this->render('index',['models'=>$models,'pager'=>$pager,'search'=>$Form]);
     }
 
     //添加goods表
@@ -77,7 +94,7 @@ class GoodsController extends Controller{
     //修改goods表
     public function actionEdit($id){
         $goods = Goods::findOne(['id'=>$id]);
-        $goods_intro = new GoodsIntro();
+        $goods_intro = GoodsIntro::findOne(['goods_id'=>$id]);
         $brand = Brand::find()->all();
         $request = \Yii::$app->request;
         if($request->isPost){
