@@ -17,6 +17,7 @@ return [
             'csrfParam' => '_csrf-backend',
         ],
         'user' => [
+            'loginUrl'=>['admin/login'],
             'identityClass' => \backend\models\Admin::className(),
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
