@@ -10,6 +10,11 @@ namespace backend\models;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 class Admin extends ActiveRecord implements IdentityInterface{
+    //常量定义场景
+    const SCENARIO_ADD = 'add';
+
+    // 用户角色数组
+    public $roles = [];
 
     //定义规则
     public function rules()
@@ -17,8 +22,35 @@ class Admin extends ActiveRecord implements IdentityInterface{
         return [
             [['username','email','status'],'required'],
             [['password_hash','password_reset_token'],'string'],
-            [['remember'],  'skipOnEmpty' => true]
+            //on指定场景  该规则只在该场景下生效
+            ['password_hash','required','on'=>[self::SCENARIO_ADD]],
+
+            // 非常重要
+            // 使用safe可以声明该attribute是安全的，任意值都可以通过验证
+            [['roles'], 'safe'],
         ];
+    }
+
+
+    /**
+     * 添加管理员后，给该管理员添加角色
+     * @param bool $insert
+     * @param array $changedAttributes
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        //给用户关联权限
+        if($this->roles){
+            $authManager = \Yii::$app->authManager;
+            $authManager->revokeAll($this->id); //先清空该用户的角色
+
+            // 该选择的角色赋给该用户
+            foreach ($this->roles as $roleName){
+                $role = $authManager->getRole($roleName);
+                if($role) $authManager->assign($role,$this->id);
+            }
+        }
+        parent::afterSave($insert, $changedAttributes);
     }
 
     //定义标签字段名
@@ -28,8 +60,7 @@ class Admin extends ActiveRecord implements IdentityInterface{
             'username'=>'用户名',
             'password_hash'=>'密码',
             'email'=>'邮箱',
-            'status'=>'状态',
-            'remember'=>'记住我'
+            'status'=>'状态'
         ];
     }
 

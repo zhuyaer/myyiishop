@@ -10,6 +10,9 @@ namespace backend\controllers;
 use backend\models\Admin;
 use backend\models\Article;
 use backend\models\LoginForm;
+use backend\models\PasswordForm;
+use backend\models\RoleForm;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\Request;
 use yii\filters\AccessControl;
@@ -28,7 +31,8 @@ class AdminController extends Controller{
 
     //添加admin表
     public function actionAdd(){
-        $model = new Admin();
+        $model = new Admin(['scenario'=>Admin::SCENARIO_ADD]);
+
         $request = \Yii::$app->request;
         if($request->isPost){
             //模型加载数据
@@ -50,20 +54,29 @@ class AdminController extends Controller{
     //修改admin表
     public function actionEdit($id){
         $model = Admin::findOne(['id'=>$id]);
+        $password_hash = $model->password_hash;
         $request = \Yii::$app->request;
         if($request->isPost){
             //模型加载数据
             $model->load($request->post());
             if($model->validate()){
                 //保存数据
-                $model->save();
+                if($model->password_hash==null){
+                    $model->password_hash = $password_hash;
+                }else{
+                    $model->password_hash = \Yii::$app->security->generatePasswordHash($model->password_hash);
+                }
+                $model->save(false);
                 return $this->redirect(['admin/index']);
+
             }else{
                 var_dump($model->getErrors());
                 exit;
             }
         }
         $model->password_hash='';
+        //回显用户角色
+        $model->roles = RoleForm::getRoleItemsById($id);
         return $this->render('add',['model'=>$model]);
     }
 
@@ -103,11 +116,33 @@ class AdminController extends Controller{
     }
 
     //注销
-    /**
-     *
-     */
     public function actionLogout(){
         \Yii::$app->user->logout();
+        return $this->redirect(['admin/login']);
+    }
+
+
+    //修改自己密码
+    public function actionPassword(){
+        if(\Yii::$app->user->isGuest){
+            return $this->redirect(['login']);
+        }
+        $model = new PasswordForm();
+        $request = \Yii::$app->request;
+
+        if($request->isPost){
+            $model->load($request->post());
+            if($model->validate()){
+                $admin = \Yii::$app->user->identity;
+                //密码加密
+                $admin->password_hash = \Yii::$app->security->generatePasswordHash($model->newPassword);
+                //保存数据
+                $admin->save();
+
+                return $this->redirect(['admin/logout']);
+            }
+        }
+        return $this->render('password',['model'=>$model]);
     }
 
 
