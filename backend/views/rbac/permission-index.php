@@ -7,12 +7,15 @@
  */
 ?>
 
-<table class="table">
+<table id="table_id_example" class="display">
+    <thead>
     <tr>
         <th>权限名称</th>
         <th>权限描述</th>
         <th>操作</th>
     </tr>
+    </thead>
+    <tbody>
     <?php foreach ($permissions as $permission):?>
         <tr id="<?=$permission->name?>">
             <td><?=$permission->name?></td>
@@ -23,6 +26,7 @@
             </td>
         </tr>
     <?php endforeach;?>
+    </tbody>
 </table>
 
 <?php
@@ -30,10 +34,16 @@
 /**
  * @var $this \yii\web\View
  */
+$this->registerCssFile('http://cdn.datatables.net/1.10.15/css/jquery.dataTables.css');
+$this->registerJsFile('http://cdn.datatables.net/1.10.15/js/jquery.dataTables.js',['depends'=>\yii\web\JqueryAsset::className()]);
 $del_url = \yii\helpers\Url::to(['rbac/delete-permission']);
 $this->registerJs(new yii\web\JsExpression(
         <<<JS
-        $('.del-btn').click(function(){
+             $(document).ready( function () {
+                $('#table_id_example').DataTable();
+                } );
+        
+            $('.del-btn').click(function(){
             var tr = $(this).closest('tr');
             var id = tr.attr('id');
             
