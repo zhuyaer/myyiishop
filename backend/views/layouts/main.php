@@ -35,12 +35,14 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    $menuItems = [
-        ['label' => 'Home', 'url' => ['/site/index']],
-    ];
+
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Login', 'url' => ['/admin/login']];
     } else {
+
+        // 调用getMenus方法从数据库菜单
+        $menuItems = Yii::$app->user->identity->getMenus();
+
         // 修改密码
         $menuItems[] = '<li>'
             . Html::beginForm(['/admin/password'], 'get')

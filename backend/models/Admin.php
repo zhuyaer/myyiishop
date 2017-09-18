@@ -31,6 +31,28 @@ class Admin extends ActiveRecord implements IdentityInterface{
         ];
     }
 
+    /**
+     * 获取menu菜单
+     */
+    public function getMenus() {
+        $menuItems = [];
+        //获取所有一级菜单
+        $menus = Menu::find()->where(['parent_id'=>0])->all();
+        foreach($menus as $menu){
+            //获取该一级菜单的所有子菜单
+            $children = Menu::find()->where(['parent_id'=>$menu->id])->all();
+            $items = [];
+            foreach ($children as $child){
+                //判断 当前用户是否有该路由的权限
+                if(\Yii::$app->user->can($child->route)){
+                    $items[] = ['label' => $child->name, 'url' => [$child->route]];
+                }
+            }
+            $menuItems[] = ['label' => $menu->name, 'items'=>$items];
+        }
+        return $menuItems;
+    }
+
 
     /**
      * 添加管理员后，给该管理员添加角色

@@ -7,6 +7,7 @@
  */
 namespace backend\controllers;
 
+use backend\filters\RbacFilter;
 use backend\models\Admin;
 use backend\models\Article;
 use backend\models\LoginForm;
@@ -150,9 +151,12 @@ class AdminController extends Controller{
     function behaviors()
     {
         return [
+            'rbac'=>[
+                'class'=>RbacFilter::className(),
+                'except'=>['logout','login', 'add', 'index', 'edit', 'delete', 'password']
+            ],
             'acf'=>[
                 'class'=>AccessControl::className(),
-
                 //只对以下操作生效
                 'only'=>['index', 'edit'],
                 'rules'=>[
