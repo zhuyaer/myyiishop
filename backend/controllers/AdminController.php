@@ -122,7 +122,6 @@ class AdminController extends Controller{
         return $this->redirect(['admin/login']);
     }
 
-
     //修改自己密码
     public function actionPassword(){
         if(\Yii::$app->user->isGuest){
