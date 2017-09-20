@@ -108,7 +108,7 @@ class MemberController extends Controller{
                 \Yii::$app->request->userIP;
             $member->save(false);
 
-            return $this->renderPartial('index');
+            return $this->redirect(['index']);
         }
 
         return $this->renderPartial('login');
@@ -197,7 +197,7 @@ class MemberController extends Controller{
             "SMS_97990014", // 短信模板编号
             $phone, // 短信接收者
             Array(  // 短信模板中字段的值
-                "code"=>rand(1000,9999),
+                "code"=>$code,
             )
         );
        if($response->Message == 'OK'){

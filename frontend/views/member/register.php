@@ -76,7 +76,7 @@
 						</li>
 						<li>
 							<label for="">验证码：</label>
-							<input type="text" class="txt" value="" placeholder="请输入短信验证码" name="smscode"  id="captcha"/> <input type="button" onclick="bindPhoneNum(this)" id="get_captcha" value="获取验证码" style="height: 25px;padding:3px 8px"/>
+							<input type="text" class="txt" value="" placeholder="请输入短信验证码" name="sms"  id="captcha"/> <input type="button" onclick="bindPhoneNum(this)" id="get_captcha" value="获取验证码" style="height: 25px;padding:3px 8px"/>
 							
 						</li>
 						<li class="checkcode">
@@ -197,7 +197,7 @@
                         digits:true,
                         rangelength:[11,11]
                     },
-                    smscode:{
+                    sms:{
                         required: true,
                         remote: {
                             url: "<?=\yii\helpers\Url::to(['member/validate-sms'])?>",     //后台处理程序
@@ -206,9 +206,6 @@
                             data: {                     //要传递的数据
                                 phone: function() {
                                     return $("#tel").val();
-                                },
-                                sms: function () {
-                                    return $("#captcha").val();
                                 }
                             }
                         }
