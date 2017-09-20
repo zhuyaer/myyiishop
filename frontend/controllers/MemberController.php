@@ -180,7 +180,11 @@ class MemberController extends Controller{
         // 参考文章 http://www.yiichina.com/tutorial/550
         // 安装redis扩展: composer require --prefer-dist yiisoft/yii2-redis
         // redis
-        \Yii::$app->redis->set('code_'.$phone, $code);
+        $redis = \Yii::$app->redis;
+        $redis->set('code_'.$phone, $code);
+        $redis->expire('code_'.$phone, 5 * 60); //过期
+
+
         //\Yii::$app->session->set('code_'.$phone, $code);
         $demo = new SmsDemo(
             "LTAI7PUWvkjjq1bw",                         //AK    LTAI7PUWvkjjq1bw
