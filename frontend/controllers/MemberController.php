@@ -12,11 +12,15 @@ use backend\models\GoodsCategory;
 use backend\models\GoodsGallery;
 use backend\models\GoodsIntro;
 use frontend\models\Address;
+use frontend\models\Cart;
 use frontend\models\LoginForm;
 use frontend\models\Member;
 use frontend\models\SmsDemo;
+use function Sodium\add;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
+use yii\web\Cookie;
 
 class MemberController extends Controller{
 
@@ -70,6 +74,111 @@ class MemberController extends Controller{
     }
 
 
+    //商品添加到购物车(完成添加到购物车的操作)
+    public function actionAddtocart($goods_id,$amount){
+
+        if(\Yii::$app->user->isGuest){
+            //未登录 购物车数据存cookie
+            //写入cookie
+            $cookies = \Yii::$app->request->cookies;
+            $value = $cookies->getValue('carts');
+            if($value){
+                $carts = unserialize($value);
+            }else{
+                $carts = [];
+            }
+
+            //检查购物车中是否存在当前需要添加的商品
+            if(array_key_exists($goods_id,$carts)){
+                $carts[$goods_id] += $amount;
+            }else{
+                $carts[$goods_id] = $amount;
+            }
+
+            $cookies = \Yii::$app->response->cookies;
+            $cookie = new Cookie();
+            $cookie->name = 'carts';
+            $cookie->value = serialize($carts);
+            $cookie->expire = time()+7*24*3600;       //过期时间戳
+            $cookies->add($cookie);
+        }else{
+            //已登录 购物车数据存数据库
+
+            //1 检查购物车有没有该商品(根据goods_id member_id查询)
+            $memberId = \Yii::$app->user->id;
+            $value = Cart::findOne(['goods_id'=> $goods_id, 'member_id'=>$memberId]);
+
+            //2. 修改数据库数量
+            if($value){   // 如果购物车中存在此商品，总数=原有数量+amount
+                $value->amount = $value->amount + $amount;
+            }else{        // 如果购物车中不存在此商品，总数=amount
+                $value = new Cart();
+                $value->goods_id = $goods_id;
+                $value->member_id = $memberId;
+                $value->amount = $amount;
+            }
+            // 3.保存修改过后的数据
+            $value->save();
+        }
+
+        //直接跳转到购物车
+        return $this->redirect(['cart']);
+    }
+
+    //购物车页面
+    public function actionCart(){
+        //获取购物车数据
+        if(\Yii::$app->user->isGuest){
+            //从cookie取值
+            $cookies = \Yii::$app->request->cookies;
+            $value = $cookies->getValue('carts');
+            if($value){
+                $carts = unserialize($value);
+            }else{
+                $carts = [];
+            }
+            $models = Goods::find()->where(['in','id',array_keys($carts)])->all();
+        }else{
+            $memberId = \Yii::$app->user->id;
+            $value = Cart::find()->where(['member_id'=>$memberId])->asArray()->all();
+            if ($value) {
+                $carts = ArrayHelper::map($value, 'goods_id', 'amount');
+            } else {
+                $carts = [];
+            }
+            $models = Goods::find()->where(['in','id', array_keys($carts)])->all();
+        }
+        return $this->renderPartial('cart',['models'=>$models,'carts'=>$carts]);
+    }
+
+    //AJAX修改购物车商品的数量
+    public function actionAjax(){
+        $goods_id = \Yii::$app->request->post('goods_id');
+        $amount = \Yii::$app->request->post('amount');
+        if(\Yii::$app->user->isGuest){
+            $cookies = Yii::$app->request->cookies;
+            $value = $cookies->getValue('carts');
+            if($value){
+                $carts = unserialize($value);
+            }else{
+                $carts = [];
+            }
+
+            //检查购物车中是否存在当前需要添加的商品
+            if(array_key_exists($goods_id,$carts)){
+                $carts[$goods_id] = $amount;
+            }
+
+            $cookies = Yii::$app->response->cookies;
+            $cookie = new Cookie();
+            $cookie->name = 'carts';
+            $cookie->value = serialize($carts);
+            $cookie->expire = time()+7*24*3600;//过期时间戳
+            $cookies->add($cookie);
+        }else{
+
+        }
+    }
 
     //注册
     public function actionRegister(){
@@ -108,10 +217,24 @@ class MemberController extends Controller{
                 \Yii::$app->request->userIP;
             $member->save(false);
 
+
+            // 用户登录后将未登录之前的购物车信息保存到数据库，并清除之前的cookie
+            //配置购物车cookie操作组件（config/main.php中配置，CookieComponents为自定义控件）
+//            'cartCookie'=>[
+//                'class'=>\frontend\components\CookieComponents::className(),
+//            ]
+            \Yii::$app->cartCookie->saveDB()->clearCookie()->save();
+
             return $this->redirect(['index']);
         }
 
         return $this->renderPartial('login');
+    }
+
+    //注销功能
+    public function actionLogout(){
+        \Yii::$app->user->logout();
+        return $this->redirect(['index']);
     }
 
     //添加收货地址
@@ -235,7 +358,6 @@ class MemberController extends Controller{
         ];
     }
 
-
     /**
      * 将菜单生成层级树
      * @param $data
@@ -252,4 +374,6 @@ class MemberController extends Controller{
         }
         return $tree;
     }
+
+
 }

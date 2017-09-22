@@ -31,7 +31,8 @@
                     <?php
                     } else {
                     ?>
-                        <li>您好，欢迎来到京西！[<a href="<?=\yii\helpers\Url::to(['member/address'])?>"><?=Yii::$app->user->identity->username?></a>][<a href="#">注销登录</a>]</li>
+                        <li>您好，欢迎来到京西！[<a href="<?=\yii\helpers\Url::to(['member/address'])?>">
+                                <?=Yii::$app->user->identity->username?></a>][<a href="<?=yii\helpers\Url::to(['member/logout'])?>">注销登录</a>]</li>
                     <?php
                     }
                     ?>

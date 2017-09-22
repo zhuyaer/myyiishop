@@ -1,6 +1,7 @@
 <?php
 namespace frontend\controllers;
 
+use backend\models\Goods;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
@@ -212,4 +213,5 @@ class SiteController extends Controller
             'model' => $model,
         ]);
     }
+
 }

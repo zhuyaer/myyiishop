@@ -44,7 +44,10 @@ return [
             'rules' => [
             ],
         ],
-
+        //配置购物车cookie操作组件
+        'cartCookie'=>[
+            'class'=>\frontend\components\CookieComponents::className(),
+        ]
     ],
     'params' => $params,
 ];
