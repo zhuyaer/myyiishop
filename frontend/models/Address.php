@@ -16,7 +16,7 @@ class Address extends ActiveRecord{
     public function rules()
     {
         return [
-            [['username','address', 'tel', 'province', 'city', 'area'],'required'],
+            [['username','address', 'tel', 'province', 'city', 'area','member_id'],'required'],
             [['default_address'], 'boolean']
         ];
     }

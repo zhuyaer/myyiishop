@@ -24,6 +24,10 @@ use yii\web\Cookie;
 
 class MemberController extends Controller{
 
+    public function init(){
+        $this->enableCsrfValidation = false;
+    }
+
     /**
      * 首页
      *
@@ -118,7 +122,7 @@ class MemberController extends Controller{
                 $value->amount = $amount;
             }
             // 3.保存修改过后的数据
-            $value->save();
+             $value->save();
         }
 
         //直接跳转到购物车
@@ -155,8 +159,10 @@ class MemberController extends Controller{
     public function actionAjax(){
         $goods_id = \Yii::$app->request->post('goods_id');
         $amount = \Yii::$app->request->post('amount');
-        if(\Yii::$app->user->isGuest){
-            $cookies = Yii::$app->request->cookies;
+
+
+        if(\Yii::$app->user->isGuest){ //没登录
+            $cookies = \Yii::$app->request->cookies;
             $value = $cookies->getValue('carts');
             if($value){
                 $carts = unserialize($value);
@@ -169,16 +175,26 @@ class MemberController extends Controller{
                 $carts[$goods_id] = $amount;
             }
 
-            $cookies = Yii::$app->response->cookies;
+            $cookies = \Yii::$app->response->cookies;
             $cookie = new Cookie();
             $cookie->name = 'carts';
             $cookie->value = serialize($carts);
             $cookie->expire = time()+7*24*3600;//过期时间戳
             $cookies->add($cookie);
-        }else{
-
+        }else{  //已经登录
+            $memberId = \Yii::$app->user->id;
+            $model = Cart::findOne(['goods_id'=> $goods_id, 'member_id'=>$memberId]);
+            $model->amount = $amount;
+            $success = $model->save();
+            if ($success == true) {
+                return "success";
+            } else {
+                return "fail";
+            }
         }
     }
+
+    //
 
     //注册
     public function actionRegister(){
@@ -200,6 +216,38 @@ class MemberController extends Controller{
     //ajax验证用户唯一性
     public function actionValidateUser($username){
         return 'true';
+    }
+
+    //删除cart表
+    public function actionDelete(){
+        $goods_id = \Yii::$app->request->post('goods_id');
+        $member_id = \Yii::$app->user->id;
+
+
+        if (\Yii::$app->user->isGuest) {  //未登录
+            // 服务端cookie执行删除
+            $cookies = \Yii::$app->request->cookies;
+            $value = $cookies->getValue('carts');
+            $carts = unserialize($value);
+            unset($carts[$goods_id]);
+
+            // 写回客户端
+            $cookies = \Yii::$app->response->cookies;
+            $cookie = new Cookie();
+            $cookie->name = 'carts';
+            $cookie->value = serialize($carts);
+            $cookie->expire = time()+7*24*3600;       //过期时间戳
+            $cookies->add($cookie);
+
+            return true;
+        } else {
+            $num = Cart::deleteAll(['goods_id' => $goods_id, 'member_id'=>$member_id]);
+            if ($num) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     //登录功能
@@ -240,8 +288,8 @@ class MemberController extends Controller{
     //添加收货地址
     public function actionAddress(){
         $model = new Address();
-
         $request = \Yii::$app->request;
+        $member_id = \Yii::$app->user->getId();
 
         $id = $request->get('id');
         if ($id != null) {
@@ -261,6 +309,8 @@ class MemberController extends Controller{
 
             //模型加载数据
             $model->load($request->post(),'');
+            $model->member_id=$member_id;
+//            var_dump( $model->member_id);exit;
             if($model->validate()){
                 //如果是修改执行此逻辑
                 $postId = $request->post('postid');
@@ -284,7 +334,7 @@ class MemberController extends Controller{
         }
 
         // 获取所有地址列表
-        $modelArray = Address::find()->all();
+        $modelArray = Address::find()->where(['member_id'=>$member_id])->all();
         return $this->renderPartial('address',['model'=>$model, 'modelArray'=>$modelArray]);
     }
 

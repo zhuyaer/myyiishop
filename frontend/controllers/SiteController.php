@@ -2,6 +2,8 @@
 namespace frontend\controllers;
 
 use backend\models\Goods;
+use frontend\models\Address;
+use frontend\models\Order;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;

@@ -29,7 +29,7 @@
                     <?php
                 } else {
                     ?>
-                    <li>您好，欢迎来到京西！[<a href="<?=\yii\helpers\Url::to(['member/address'])?>"><?=Yii::$app->user->identity->username?></a>][<a href="#">注销登录</a>]</li>
+                    <li>您好，欢迎来到京西！[<a href="<?=\yii\helpers\Url::to(['member/address'])?>"><?=Yii::$app->user->identity->username?></a>][<a href="<?=\yii\helpers\Url::to(['member/logout'])?>">注销登录</a>]</li>
                     <?php
                 }
                 ?>
@@ -86,10 +86,10 @@
             <td class="col4">
                 <a href="javascript:;" class="reduce_num"></a>
                 <input type="text" name="amount" value="<?=$carts[$model->id]?>" class="amount"/>
-                <a href="javascript:void(0);" class="add_num"></a>
+                <a href="javascript:;" class="add_num"></a>
             </td>
             <td class="col5">￥<span><?=$model->shop_price * $carts[$model->id]?></span></td>
-            <td class="col6"><a href="">删除</a></td>
+            <td class="col6"><a href="javascript:void(0)" class="del-btn">删除</a></td>
         </tr>
         <?php endforeach;?>
         </tbody>
@@ -101,7 +101,7 @@
     </table>
     <div class="cart_btn w990 bc mt10">
         <a href="" class="continue">继续购物</a>
-        <a href="" class="checkout">结 算</a>
+        <a href="<?=\yii\helpers\Url::to(['order/index'])?>" class="checkout">结 算</a>
     </div>
 </div>
 <!-- 主体部分 end -->
@@ -136,5 +136,4 @@
 </body>
 </html>
 
-<?php
 
