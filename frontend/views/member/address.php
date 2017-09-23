@@ -32,7 +32,7 @@
                     <?php
                     } else {
                     ?>
-                        <li>您好，欢迎来到京西！[<a href="<?=\yii\helpers\Url::to(['member/address'])?>"><?=Yii::$app->user->identity->username?></a>][<a href="#">注销登录</a>]</li>
+                        <li>您好，欢迎来到京西！[<a href="<?=\yii\helpers\Url::to(['member/address'])?>"><?=Yii::$app->user->identity->username?></a>][<a href="<?=yii\helpers\Url::to(['member/logout'])?>">注销登录</a>]</li>
                     <?php
                     }
                     ?>
@@ -92,8 +92,8 @@
 						<div class="uclist mt10">
 							<ul class="list1 fl">
 								<li><a href="">用户信息></a></li>
-								<li><a href="">我的订单></a></li>
-								<li><a href="">收货地址></a></li>
+								<li><a href="<?=\yii\helpers\Url::to(['order/myorder'])?>">我的订单></a></li>
+								<li><a href="<?=\yii\helpers\Url::to(['member/address'])?>">收货地址></a></li>
 								<li><a href="">我的收藏></a></li>
 							</ul>
 
@@ -447,7 +447,7 @@
 			<div class="menu_wrap">
 				<dl>
 					<dt>订单中心 <b></b></dt>
-					<dd><b>.</b><a href="">我的订单</a></dd>
+					<dd><b>.</b><a href="<?=\yii\helpers\Url::to(['order/myorder'])?>">我的订单</a></dd>
 					<dd><b>.</b><a href="">我的关注</a></dd>
 					<dd><b>.</b><a href="">浏览历史</a></dd>
 					<dd><b>.</b><a href="">我的团购</a></dd>
@@ -456,10 +456,10 @@
 				<dl>
 					<dt>账户中心 <b></b></dt>
 					<dd class="cur"><b>.</b><a href="">账户信息</a></dd>
+                    <dd><b>.</b><a href="<?=\yii\helpers\Url::to(['member/address'])?>">收货地址</a></dd>
 					<dd><b>.</b><a href="">账户余额</a></dd>
 					<dd><b>.</b><a href="">消费记录</a></dd>
 					<dd><b>.</b><a href="">我的积分</a></dd>
-					<dd><b>.</b><a href="">收货地址</a></dd>
 				</dl>
 
 				<dl>

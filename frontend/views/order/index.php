@@ -22,7 +22,17 @@
 			</div>
 			<div class="topnav_right fr">
 				<ul>
-					<li>您好，欢迎来到京西！[<a href="login.html">登录</a>] [<a href="register.html">免费注册</a>] </li>
+                    <?php
+                    if (Yii::$app->user->isGuest) {
+                        ?>
+                        <li>您好，欢迎来到京西！[<a href="login.html">登录</a>] [<a href="register.html">免费注册</a>] </li>
+                        <?php
+                    } else {
+                        ?>
+                        <li>您好，欢迎来到京西！[<a href="<?=\yii\helpers\Url::to(['member/address'])?>"><?=Yii::$app->user->identity->username?></a>][<a href="<?=yii\helpers\Url::to(['member/logout'])?>">注销登录</a>]</li>
+                        <?php
+                    }
+                    ?>
 					<li class="line">|</li>
 					<li>我的订单</li>
 					<li class="line">|</li>
@@ -59,21 +69,22 @@
 			<h2>填写并核对订单信息</h2>
 		</div>
 
+        <form action="<?=\yii\helpers\Url::to(['order/save'])?>" method="post">
 		<div class="fillin_bd">
+
 			<!-- 收货人信息  start-->
 			<div class="address">
 				<h3>收货人信息</h3>
 				<div class="address_info">
                 <?php foreach ($modelArray as $value):?>
 				<p>
-					<input type="radio" value="1" name="address_id"/>
+					<input type="radio" value="<?=$value['id']?>" name="address_id" <?php if ($value['default_address'] == 1) echo 'checked'; ?>/>
                     <?=$value['username']?>
                     <?=$value['tel']?>
                     <?=$value['province']?>
                     <?=$value['city']?>
                     <?=$value['area']?>
                     <?=$value['address']?>
-
                 </p>
                 <?php endforeach;?>
 				</div>
@@ -86,7 +97,6 @@
 			<div class="delivery">
 				<h3>送货方式 </h3>
 
-
 				<div class="delivery_select">
 					<table>
 						<thead>
@@ -97,13 +107,12 @@
 							</tr>
 						</thead>
 						<tbody>
-                            <?php foreach ($deliveries as $value):?>
+                            <?php foreach ($deliveries as $key=>$value):?>
 							<tr class="cur">	
 								<td>
-									<input type="radio" name="delivery" checked="checked" /><?=$value[0]?>
-
+									<input type="radio" class="delivery_id" name="delivery_id" value="<?=$key?>" checked="checked" /><?=$value[0]?>
 								</td>
-								<td>￥<?=$value[1]?>.00</td>
+                                <td>￥<span class="delivery_price"><?=$value[1]?>.00</span></td>
 								<td><?=$value[2]?></td>
 							</tr>
                             <?php endforeach;?>
@@ -119,12 +128,11 @@
 			<div class="pay">
 				<h3>支付方式 </h3>
 
-
 				<div class="pay_select">
 					<table>
-                        <?php foreach ($payment as $value):?>
+                        <?php foreach ($payment as $key => $value):?>
 						<tr class="cur">
-							<td class="col1"><input type="radio" name="pay" /><?=$value[0]?></td>
+							<td class="col1"><input type="radio" name="payment_id" value="<?=$key?>" <?php if ($key == 2) echo "checked";?> /><?=$value[0]?></td>
 							<td class="col2"><?=$value[1]?></td>
 						</tr>
                         <?php endforeach;?>
@@ -138,9 +146,8 @@
 			<div class="receipt none">
 				<h3>发票信息 </h3>
 
-
 				<div class="receipt_select ">
-					<form action="">
+
 						<ul>
 							<li>
 								<label for="">发票抬头：</label>
@@ -155,8 +162,7 @@
 								<input type="radio" name="content" />体育休闲
 								<input type="radio" name="content" />耗材
 							</li>
-						</ul>						
-					</form>
+						</ul>
 
 				</div>
 			</div>
@@ -203,7 +209,7 @@
 									</li>
 									<li>
 										<span>运费：</span>
-										<em>￥10.00</em>
+                                        <em>￥<span class="yunfei"></span></em>
 									</li>
 									<li>
 										<span>应付总额：</span>
@@ -220,10 +226,11 @@
 		</div>
 
 		<div class="fillin_ft">
-			<a href=""><span>提交订单</span></a>
-			<p>应付总额：<strong>￥5076.00元</strong></p>
-			
+            <input type="submit" value="">
+			<p>应付总额：<strong>￥<?=$sum+10?>元</strong></p>
 		</div>
+        <input type="hidden" name="_csrf-frontend" value="<?=Yii::$app->request->csrfToken?>"/>
+        </form>
 	</div>
 	<!-- 主体部分 end -->
 
@@ -254,5 +261,22 @@
 		</p>
 	</div>
 	<!-- 底部版权 end -->
+
+    <script>
+        var default_yunfei = $('[name="delivery_id"]:checked')
+            .closest('td')
+            .next('td')
+            .children('.delivery_price')
+            .text();
+        $('.yunfei').text(default_yunfei);
+
+        $(".delivery_id").change(function () {
+            var yunfei = $(this).closest('td')
+                            .next('td')
+                            .children('.delivery_price')
+                            .text();
+            $('.yunfei').text(yunfei);
+        });
+    </script>
 </body>
 </html>

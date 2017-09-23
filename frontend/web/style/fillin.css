@@ -68,6 +68,8 @@ input[type='radio']{position: relative; top:2px; margin-right: 2px;}
 .fillin_ft{width: 988px; height: 50px; background: #f5f5f5;  border:1px solid #E7E3E7; border-top: 0;  text-align: right;}
 .fillin_ft p{font-size: 16px; font-weight:bold; color: #666; float: right; display: inline; line-height: 50px;}
 .fillin_ft p strong{color:#e4393c; font-family: Verdana,Arial;}
-.fillin_ft a{float: right; display: inline; width: 135px; height: 36px; background: url("../images/order_btn.jpg") 0 0 no-repeat; vertical-align: middle; margin: 7px 10px 0;}
-.fillin_ft a span{display: none;}
-.fillin_ft a:hover{background-position: 0 -36px;}
+.fillin_ft a, .fillin_ft input{float: right; display: inline; width: 135px; height: 36px; background: url("../images/order_btn.jpg") 0 0 no-repeat; vertical-align: middle; margin: 7px 10px 0;}
+.fillin_ft input { border: 0; }
+.fillin_ft a span {display: none;}
+.fillin_ft input:hover { cursor: pointer }
+.fillin_ft a:hover, .fillin_ft input:hover {background-position: 0 -36px;}
