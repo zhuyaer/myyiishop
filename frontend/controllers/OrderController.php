@@ -143,12 +143,17 @@ class OrderController extends Controller{
         return $this->renderPartial('payok');
     }
 
-
     // 查看我的订单
     public function actionMyorder() {
         // 获取登录用户id
         $member_id = Yii::$app->user->getId();
         $orders = Order::find()->where(['member_id'=>$member_id])->all();
         return $this->renderPartial('myorder', ['orders'=>$orders]);
+    }
+
+    //删除订单
+    public function actionDelete(){
+        $id = Yii::$app->request->post('id');
+        return Order::deleteAll(['id'=>$id]);
     }
 }

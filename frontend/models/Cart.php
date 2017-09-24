@@ -43,7 +43,7 @@ class Cart extends \yii\db\ActiveRecord
     }
 
     // Goods表关联查询
-    public function GetGoods() {
-        return $this->hasOne(Goods::className(), ["id"=>"goods_id"]);
-    }
+public function GetGoods() {
+    return $this->hasOne(Goods::className(), ["id"=>"goods_id"]);
+}
 }

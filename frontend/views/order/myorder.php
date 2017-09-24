@@ -493,7 +493,7 @@
 					<thead>
 						<tr>
 							<th width="10%">订单号</th>
-<!--							<th width="20%">订单商品</th>-->
+                            <th width="20%">订单商品</th>
 							<th width="10%">收货人</th>
 							<th width="20%">订单金额</th>
 							<th width="20%">下单时间</th>
@@ -502,13 +502,21 @@
 						</tr>
 					</thead>
 					<tbody>
-                        <?php foreach ($orders as $order): ?>
-						<tr>
+                        <?php foreach ($orders as $order):
+                            $order_goods = \frontend\models\OrderGoods::find()->where(['order_id'=>$order->id])->all();
+                        ?>
+						<tr id="<?=$order->id?>">
 							<td><a href=""><?=$order->trade_no?></a></td>
-                            <!--<td><a href=""><img src="/images/order1.jpg" alt="" /></a></td>-->
+                            <td>
+                                <a href="">
+                                    <?php foreach ($order_goods as $key=>$order_good):?>
+                                    <img src="<?=$order_good->logo?>" alt="" />
+                                    <?php endforeach;?>
+                                </a>
+                            </td>
 							<td><?=$order->name?></td>
 							<td>￥<?=$order->total?> <?=$order->delivery_name?></td>
-							<td><?=$order->create_time?></td>
+							<td><?=date('Y-m-d',$order->create_time)?></td>
 							<td>
                                 <?php
                                     //0已取消 1待付款 2待发货 3待收货 4完成
@@ -525,7 +533,7 @@
                                     }
                                 ?>
                             </td>
-							<td><a href="">查看</a> | <a href="">删除</a></td>
+							<td><a href="">查看</a> | <a href="javascript:void(0)" class="del-btn">删除</a></td>
 						</tr>
                         <?php endforeach; ?>
 					</tbody> 
@@ -628,5 +636,21 @@
 		</p>
 	</div>
 	<!-- 底部版权 end -->
+        <script type="text/javascript">
+            $(function(){
+                //删除
+                $(".del-btn").click(function () {
+                    var tr = $(this).closest("tr");
+                    var id = tr.attr("id");
+                    $.post('/index.php/order/delete.html',{id:id,"_csrf-frontend":"<?=Yii::$app->request->csrfToken?>"},function (data) {
+                        if(data){
+                            tr.remove();
+                        } else {
+                            alert('删除失败');
+                        }
+                    });
+                });
+            });
+        </script>
 </body>
 </html>
