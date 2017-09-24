@@ -194,8 +194,6 @@ class MemberController extends Controller{
         }
     }
 
-    //
-
     //注册
     public function actionRegister(){
 

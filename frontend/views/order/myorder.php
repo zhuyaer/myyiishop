@@ -505,7 +505,7 @@
                         <?php foreach ($orders as $order): ?>
 						<tr>
 							<td><a href=""><?=$order->trade_no?></a></td>
-<!--							<td><a href=""><img src="/images/order1.jpg" alt="" /></a></td>-->
+                            <!--<td><a href=""><img src="/images/order1.jpg" alt="" /></a></td>-->
 							<td><?=$order->name?></td>
 							<td>￥<?=$order->total?> <?=$order->delivery_name?></td>
 							<td><?=$order->create_time?></td>
